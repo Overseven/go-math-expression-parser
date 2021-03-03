@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	// array of priority sorted operations
+	// the array of operations sorted by priority
 	// priority[0] - highest priority (*, /, %, ^)
 	// priority[1] - lowest priority (+, -)
 	priority = [2]map[rune]func(a ...float64) float64{
@@ -23,14 +23,14 @@ var (
 	}
 )
 
-// toString convertation
+// toString conversation
 func (t Term) String() string {
 	return t.Val
 }
 
-// toString convertation
+// toString conversation
 func (n Node) String() string {
-	return string("( " + string(n.Op) + " " + n.L_exp.String() + " " + n.R_exp.String() + " )")
+	return "( " + string(n.Op) + " " + n.L_exp.String() + " " + n.R_exp.String() + " )"
 }
 
 func (n Node) getVarList(vars map[string]interface{}) {
@@ -132,5 +132,5 @@ func parseStr(str []rune) (Exp, error) {
 	} else {
 		return Term{string(str)}, nil
 	}
-	return nil, errors.New("unknow internal error")
+	return nil, errors.New("unknown internal error")
 }

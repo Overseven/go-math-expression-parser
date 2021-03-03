@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	// add flag for print example
+	// add flag to print example
 	exampleFlag := flag.Bool("example", false, "print example of usage")
 
 	flag.Parse()
@@ -37,7 +37,7 @@ func main() {
 		return
 	}
 
-	// get list of the used variable in the expression
+	// get list of the variables used in the expression
 	varsNeeded := expp.GetVarList(exp)
 
 	// create [variable]value map to execute the expression
@@ -55,7 +55,7 @@ func main() {
 		vars[v] = val
 	}
 
-	// execute the expression with users values of variables
+	// execute the expression using values of variables
 	result, err := exp.Evaluate(vars)
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -65,7 +65,7 @@ func main() {
 	fmt.Println("Result: ", result)
 }
 
-// if flag -example is used, print example of usage
+// if flag -example is presented, print example of usage
 func PrintExample() {
 	fmt.Println("Instructions:")
 	fmt.Println("1. Write math expression.")
