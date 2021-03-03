@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	// add flag for print example
 	exampleFlag := flag.Bool("example", false, "print example of usage")
 
 	flag.Parse()
@@ -20,6 +21,8 @@ func main() {
 	}
 
 	fmt.Println("Input math expression with '*', '/', '^', '%', '+', '-':")
+
+	// input expression
 	reader := bufio.NewReader(os.Stdin)
 	formula, err := reader.ReadString('\n')
 	if err != nil {
@@ -27,15 +30,20 @@ func main() {
 		return
 	}
 
+	// parsing expression
 	exp, err := expp.ParseStr(formula)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
 
+	// get list of the used variable in the expression
 	varsNeeded := expp.GetVarList(exp)
+
+	// create [variable]value map to execute the expression
 	vars := make(map[string]float64)
 
+	// fill map
 	for _, v := range varsNeeded {
 		fmt.Print(v + " = ")
 		var val float64
@@ -47,13 +55,17 @@ func main() {
 		vars[v] = val
 	}
 
+	// execute the expression with users values of variables
 	result, err := exp.Evaluate(vars)
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
+
+	// print result value
 	fmt.Println("Result: ", result)
 }
 
+// if flag -example is used, print example of usage
 func PrintExample() {
 	fmt.Println("Instructions:")
 	fmt.Println("1. Write math expression.")

@@ -6,6 +6,9 @@ import (
 )
 
 var (
+	// array of priority sorted operations
+	// priority[0] - highest priority (*, /, %, ^)
+	// priority[1] - lowest priority (+, -)
 	priority = [2]map[rune]func(a ...float64) float64{
 		{
 			'*': mult,
@@ -20,10 +23,12 @@ var (
 	}
 )
 
+// toString convertation
 func (t Term) String() string {
 	return t.Val
 }
 
+// toString convertation
 func (n Node) String() string {
 	return string("( " + string(n.Op) + " " + n.L_exp.String() + " " + n.R_exp.String() + " )")
 }

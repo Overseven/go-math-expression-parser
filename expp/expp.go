@@ -7,22 +7,26 @@ import (
 	"strings"
 )
 
+// base interface for Term and Node structures
 type Exp interface {
 	String() string
 	Evaluate(vars map[string]float64) (float64, error)
 	getVarList(vars map[string]interface{})
 }
 
+// struct which contains single value
 type Term struct {
 	Val string
 }
 
+// struct which contains two variables and binary operation
 type Node struct {
 	Op    rune
 	L_exp Exp
 	R_exp Exp
 }
 
+// parsing math expression in string, return Node tree
 func ParseStr(str string) (Exp, error) {
 	str = strings.ReplaceAll(str, " ", "")
 	str = strings.TrimSpace(str)
@@ -34,6 +38,7 @@ func ParseStr(str string) (Exp, error) {
 	return res, nil
 }
 
+// get list of variables which used in the expression
 func GetVarList(expr Exp) []string {
 	vars := make(map[string]interface{})
 	expr.getVarList(vars)
@@ -47,6 +52,7 @@ func GetVarList(expr Exp) []string {
 	return sortedVars
 }
 
+// execute expression tree
 func (n Node) Evaluate(vars map[string]float64) (float64, error) {
 	left, err := n.L_exp.Evaluate(vars)
 	if err != nil {
@@ -64,6 +70,7 @@ func (n Node) Evaluate(vars map[string]float64) (float64, error) {
 	return result, nil
 }
 
+// returns value which contains in Term
 func (t Term) Evaluate(vars map[string]float64) (float64, error) {
 	if t.Val == "" {
 		return 0.0, nil
