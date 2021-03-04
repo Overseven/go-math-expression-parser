@@ -2,7 +2,10 @@ package expp
 
 import (
 	"errors"
+	"fmt"
+	"regexp"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -58,6 +61,7 @@ func containsInFuncMaps(op rune) (index int, ok bool) {
 }
 
 func parseStr(str []rune) (Exp, error) {
+
 	level := 0
 	for i := len(str) - 1; i >= 0; i-- {
 		c := str[i]
@@ -72,7 +76,7 @@ func parseStr(str []rune) (Exp, error) {
 		if level > 0 {
 			continue
 		}
-		if _, ok := containsInFuncMaps(c); ok && i != 0 {
+		if _, ok := priority[1][c]; ok && i != 0 {
 			left := str[0:i]
 			right := str[i+1:]
 			resL, err := parseStr(left)
@@ -84,11 +88,35 @@ func parseStr(str []rune) (Exp, error) {
 				return nil, err
 			}
 			return Node{c, resL, resR}, nil
-		} else if i < (len(str)-2) && str[i+1] == '(' {
-			return nil, errors.New("operation before parenthesis is not found")
 		}
 	}
-
+	for i := len(str) - 1; i >= 0; i-- {
+		c := str[i]
+		if c == ')' {
+			level++
+			continue
+		}
+		if c == '(' {
+			level--
+			continue
+		}
+		if level > 0 {
+			continue
+		}
+		if _, ok := priority[0][c]; ok && i != 0 {
+			left := str[0:i]
+			right := str[i+1:]
+			resL, err := parseStr(left)
+			if err != nil {
+				return nil, err
+			}
+			resR, err := parseStr(right)
+			if err != nil {
+				return nil, err
+			}
+			return Node{c, resL, resR}, nil
+		}
+	}
 	if str[0] == '(' {
 		for i, c := range str {
 			if c == '(' {
@@ -107,5 +135,66 @@ func parseStr(str []rune) (Exp, error) {
 	} else {
 		return Term{string(str)}, nil
 	}
-	return nil, errors.New("unknown internal error")
+	return nil, errors.New("unknow internal error")
+}
+
+func useRegExp(s string) {
+	varOrNum := "(([a-z0-9]+)|([0-9]+(\\.[0-9]+)?))"
+	binOps := "[\\+\\-\\*/%\\^]"
+	unaryOps := "[\\-\\+]"
+	funcs := "((sqrt)|(pow)|(bar))"
+	binPattern := "^" + varOrNum + binOps + varOrNum + "\\z"
+	unaryPattern := "^" + unaryOps + varOrNum + "\\z"
+	funcPattern := "^" + funcs + "\\(" + varOrNum + "(," + varOrNum + ")*" + "\\)\\z"
+
+	binMatch, _ := regexp.MatchString(binPattern, s)
+	unMatch, _ := regexp.MatchString(unaryPattern, s)
+	funcMatch, _ := regexp.MatchString(funcPattern, s)
+
+	s = strings.ReplaceAll(s, "%", "%%")
+	fmt.Printf("\"" + s + "\"\t")
+	if binMatch {
+		fmt.Println("binary")
+	} else if unMatch {
+		fmt.Println("unary")
+	} else if funcMatch {
+		fmt.Println("func")
+	} else {
+		fmt.Println("err")
+	}
+}
+func ParseStrRegExp(str []rune) (Exp, error) {
+
+	fmt.Println("Must be true:")
+	s := "x+y"
+	useRegExp(s)
+	s = "x^y"
+	useRegExp(s)
+	s = "x%y"
+	useRegExp(s)
+	s = "1.3+2.9"
+	useRegExp(s)
+	s = "a5*165"
+	useRegExp(s)
+	s = "x1/y2"
+	useRegExp(s)
+	s = "-x1"
+	useRegExp(s)
+	s = "pow(x1)"
+	useRegExp(s)
+	s = "sqrt(x1)"
+	useRegExp(s)
+	s = "bar(x,y,14.5,x2)"
+	useRegExp(s)
+
+	fmt.Println("\nMust be false:")
+	s = "x+y "
+	useRegExp(s)
+	s = " x+y"
+	useRegExp(s)
+	s = "x+5.6y"
+	useRegExp(s)
+	s = "1.4x+y"
+	useRegExp(s)
+	return nil, nil
 }
