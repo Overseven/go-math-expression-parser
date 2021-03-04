@@ -32,6 +32,7 @@ func main() {
 
 	// parsing expression
 	exp, err := expp.ParseStr(formula)
+	//exp, err := expp.ParseStr("x*(y-10)")
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return

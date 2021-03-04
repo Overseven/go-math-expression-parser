@@ -58,7 +58,6 @@ func containsInFuncMaps(op rune) (index int, ok bool) {
 }
 
 func parseStr(str []rune) (Exp, error) {
-
 	level := 0
 	for i := len(str) - 1; i >= 0; i-- {
 		c := str[i]
@@ -73,7 +72,7 @@ func parseStr(str []rune) (Exp, error) {
 		if level > 0 {
 			continue
 		}
-		if _, ok := priority[1][c]; ok && i != 0 {
+		if _, ok := containsInFuncMaps(c); ok && i != 0 {
 			left := str[0:i]
 			right := str[i+1:]
 			resL, err := parseStr(left)
@@ -85,35 +84,11 @@ func parseStr(str []rune) (Exp, error) {
 				return nil, err
 			}
 			return Node{c, resL, resR}, nil
+		} else if i < (len(str)-2) && str[i+1] == '(' {
+			return nil, errors.New("operation before parenthesis is not found")
 		}
 	}
-	for i := len(str) - 1; i >= 0; i-- {
-		c := str[i]
-		if c == ')' {
-			level++
-			continue
-		}
-		if c == '(' {
-			level--
-			continue
-		}
-		if level > 0 {
-			continue
-		}
-		if _, ok := priority[0][c]; ok && i != 0 {
-			left := str[0:i]
-			right := str[i+1:]
-			resL, err := parseStr(left)
-			if err != nil {
-				return nil, err
-			}
-			resR, err := parseStr(right)
-			if err != nil {
-				return nil, err
-			}
-			return Node{c, resL, resR}, nil
-		}
-	}
+
 	if str[0] == '(' {
 		for i, c := range str {
 			if c == '(' {
