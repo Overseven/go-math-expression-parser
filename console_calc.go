@@ -9,6 +9,16 @@ import (
 	"github.com/Overseven/go-math-expression-parser/expp"
 )
 
+// Foo - example of user define function
+func Foo(a ...float64) float64 {
+	fmt.Println("foo was called!")
+	var sum float64
+	for _, val := range a {
+		sum += val
+	}
+	return sum
+}
+
 func main() {
 	// add flag to print example
 	exampleFlag := flag.Bool("example", false, "print example of usage")
@@ -20,7 +30,10 @@ func main() {
 		return
 	}
 
-	fmt.Println("Input math expression with '*', '/', '^', '%', '+', '-':")
+	expp.AddFunction(Foo, "foo")
+	//expp.ParseStrRegExp([]rune{})
+	//
+	fmt.Println("Input math expression:")
 
 	// input expression
 	reader := bufio.NewReader(os.Stdin)
@@ -32,11 +45,27 @@ func main() {
 
 	// parsing expression
 	exp, err := expp.ParseStr(formula)
-	//exp, err := expp.ParseStr("x*(y-10)")
-	if err != nil {
-		fmt.Println("Error: ", err)
-		return
-	}
+	// if exp, isFunc, err := expp.ParseFunc([]rune("foo(2*5^2,bar(3,2),4)")); err != nil {
+	// 	fmt.Println("Error:", err)
+	// 	return
+	// } else if isFunc {
+	// 	fmt.Println(exp.String())
+	// 	res, err := exp.Evaluate(map[string]float64{})
+	// 	if err != nil {
+	// 		fmt.Println("Error:", err)
+	// 		return
+	// 	}
+	// 	fmt.Println("Result =", res)
+	// } else {
+	// 	fmt.Println("This is not a function!")
+	// }
+	//exp, err := expp.ParseStr("sqrt(14+(x-10))")
+	// if err != nil {
+	// 	fmt.Println("Error: ", err)
+	// 	return
+	// }
+
+	fmt.Println(exp)
 
 	// get list of the variables used in the expression
 	varsNeeded := expp.GetVarList(exp)
@@ -64,9 +93,10 @@ func main() {
 
 	// print result value
 	fmt.Println("Result: ", result)
+	//
 }
 
-// if flag -example is presented, print example of usage
+// PrintExample prints instructions if flag -example is presented
 func PrintExample() {
 	fmt.Println("Instructions:")
 	fmt.Println("1. Write math expression.")
