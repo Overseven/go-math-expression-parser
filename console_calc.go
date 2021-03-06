@@ -10,13 +10,13 @@ import (
 )
 
 // Foo - example of user define function
-func Foo(a ...float64) float64 {
+func Foo(a ...float64) (float64, error) {
 	fmt.Println("foo was called!")
 	var sum float64
 	for _, val := range a {
 		sum += val
 	}
-	return sum
+	return sum, nil
 }
 
 func main() {
@@ -30,9 +30,9 @@ func main() {
 		return
 	}
 
+	// add user function for parsing
 	expp.AddFunction(Foo, "foo")
-	//expp.ParseStrRegExp([]rune{})
-	//
+
 	fmt.Println("Input math expression:")
 
 	// input expression
@@ -45,27 +45,9 @@ func main() {
 
 	// parsing expression
 	exp, err := expp.ParseStr(formula)
-	// if exp, isFunc, err := expp.ParseFunc([]rune("foo(2*5^2,bar(3,2),4)")); err != nil {
-	// 	fmt.Println("Error:", err)
-	// 	return
-	// } else if isFunc {
-	// 	fmt.Println(exp.String())
-	// 	res, err := exp.Evaluate(map[string]float64{})
-	// 	if err != nil {
-	// 		fmt.Println("Error:", err)
-	// 		return
-	// 	}
-	// 	fmt.Println("Result =", res)
-	// } else {
-	// 	fmt.Println("This is not a function!")
-	// }
-	//exp, err := expp.ParseStr("sqrt(14+(x-10))")
-	// if err != nil {
-	// 	fmt.Println("Error: ", err)
-	// 	return
-	// }
 
-	fmt.Println(exp)
+	// print parsed tree
+	fmt.Println("\nParsed tree:", exp)
 
 	// get list of the variables used in the expression
 	varsNeeded := expp.GetVarList(exp)
@@ -93,7 +75,6 @@ func main() {
 
 	// print result value
 	fmt.Println("Result: ", result)
-	//
 }
 
 // PrintExample prints instructions if flag -example is presented

@@ -80,12 +80,26 @@ func (n Node) Evaluate(vars map[string]float64) (float64, error) {
 	if err != nil {
 		return 0.0, err
 	}
-	indx, ok := containsInFuncMaps(n.Op)
-	if !ok {
-		return 0.0, errors.New("not supported operation: '" + string(n.Op) + "'")
+	indx, exist := binaryOperatorExist(n.Op)
+	if !exist {
+		return 0.0, errors.New("not supported binary operation: '" + string(n.Op) + "'")
 	}
-	result := priority[indx][n.Op](left, right)
-	return result, nil
+	result, err := priority[indx][n.Op](left, right)
+	return result, err
+}
+
+// Evaluate - execute unary operator
+func (u Unary) Evaluate(vars map[string]float64) (float64, error) {
+	right, err := u.exp.Evaluate(vars)
+	if err != nil {
+		return 0.0, err
+	}
+	indx, exist := unaryOperatorExist(u.Op)
+	if !exist {
+		return 0.0, errors.New("not supported unary operation: '" + u.Op + "'")
+	}
+	result, err := priority[indx][u.Op](right)
+	return result, err
 }
 
 // Evaluate - return a value which contains in Term
@@ -113,8 +127,8 @@ func (f Func) Evaluate(vars map[string]float64) (float64, error) {
 		}
 		args = append(args, res)
 	}
-	res := priority[0][f.Op](args...)
-	return res, nil
+	res, err := priority[0][f.Op](args...)
+	return res, err
 }
 
 // ParenthesisIsCorrect - checks correct parenthesis pairs

@@ -23,6 +23,11 @@ func (n Node) String() string {
 }
 
 // toString conversation
+func (u Unary) String() string {
+	return "( " + string(u.Op) + " " + u.exp.String() + " )"
+}
+
+// toString conversation
 func (f Func) String() string {
 	str := ""
 	for _, arg := range f.args {
@@ -35,6 +40,10 @@ func (f Func) String() string {
 func (n Node) getVarList(vars map[string]interface{}) {
 	n.LExp.getVarList(vars)
 	n.RExp.getVarList(vars)
+}
+
+func (u Unary) getVarList(vars map[string]interface{}) {
+	u.exp.getVarList(vars)
 }
 
 func (t Term) getVarList(vars map[string]interface{}) {
@@ -54,10 +63,16 @@ func (f Func) getVarList(vars map[string]interface{}) {
 	}
 }
 
-// TODO: fix for similar unary and binary operators (+, -)
-func containsInFuncMaps(op string) (index int, ok bool) {
-	for i, opMap := range priority {
-		if _, ok := opMap[op]; ok {
+func unaryOperatorExist(op string) (index int, exist bool) {
+	if _, ok := priority[0][op]; ok {
+		return 0, true
+	}
+	return -1, false
+}
+
+func binaryOperatorExist(op string) (index int, exist bool) {
+	for i:= 1; i<=2; i++ {
+		if _, ok := priority[i][op]; ok {
 			return i, true
 		}
 	}
@@ -124,8 +139,6 @@ func parseFunc(str []rune) (f Func, isFunc bool, err error) {
 	return f, true, nil
 }
 
-// TODO: add unary operators parsing
-
 func parseStr(str []rune) (Exp, error) {
 	if len(str) == 0 {
 		return Term{"0"}, nil
@@ -146,18 +159,27 @@ func parseStr(str []rune) (Exp, error) {
 			if level > 0 {
 				continue
 			}
-			if _, ok := priority[priorityLevel][string(c)]; ok && i != 0 {
-				left := str[0:i]
-				right := str[i+1:]
-				resL, err := parseStr(left)
-				if err != nil {
-					return nil, err
+			if _, ok := priority[priorityLevel][string(c)]; ok {
+				if i > 0 {
+					left := str[0:i]
+					right := str[i+1:]
+					resL, err := parseStr(left)
+					if err != nil {
+						return nil, err
+					}
+					resR, err := parseStr(right)
+					if err != nil {
+						return nil, err
+					}
+					return Node{string(c), resL, resR}, nil
+				} else{
+					right := str[i+1:]
+					resR, err := parseStr(right)
+					if err != nil {
+						return nil, err
+					}
+					return Unary{string(c), resR}, nil
 				}
-				resR, err := parseStr(right)
-				if err != nil {
-					return nil, err
-				}
-				return Node{string(c), resL, resR}, nil
 			}
 		}
 	}

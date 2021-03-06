@@ -1,9 +1,14 @@
 package expp
 
-import "math"
+import (
+	"errors"
+	"fmt"
+	"math"
+	"strconv"
+)
 
 // FuncType - internal type of functions
-type FuncType func(args ...float64) float64
+type FuncType func(args ...float64) (float64, error)
 
 var (
 	// the array of operations sorted by priority
@@ -12,8 +17,8 @@ var (
 	// priority[2] - lowest priority (+, -)
 	priority = [3]map[string]FuncType{
 		{
-			// "+":    unarySum,
-			// "-":    unarySub,
+			"+":    unarySum,
+			"-":    unarySub,
 			"sqrt": sqrt,
 		},
 		{
@@ -29,17 +34,74 @@ var (
 	}
 )
 
-// TODO: add errors in return values
+func unarySum(args ...float64) (float64, error) {
+	if len(args) != 1 {
+		return 0, errors.New("incorrect count of args for unary sum operator. Need: 2, but get: " + strconv.Itoa(len(args)))
+	}
+	return args[0], nil
+}
+func unarySub(args ...float64) (float64, error) {
+	if len(args) != 1 {
+		return 0, errors.New("incorrect count of args for unary subtract operator. Need: 2, but get: " + strconv.Itoa(len(args)))
+	}
+	return -args[0], nil
+}
 
-func unarySum(vars ...float64) float64 { return vars[0] }
-func unarySub(vars ...float64) float64 { return -vars[0] }
+func sqrt(args ...float64) (float64, error) {
+	if len(args) != 1 {
+		return 0, errors.New("incorrect count of args for 'sqrt' function. Need: 1, but get: " + strconv.Itoa(len(args)))
+	}
+	if args[0] < 0 {
+		return 0, errors.New("'sqrt' function argument is negative: " + fmt.Sprintf("%f", args[0]))
+	}
+	return math.Sqrt(args[0]), nil
+}
 
-func sqrt(vars ...float64) float64 { return math.Sqrt(vars[0]) }
+func mult(args ...float64) (float64, error) {
+	if len(args) != 2 {
+		return 0, errors.New("incorrect count of args for multiplication operator. Need: 2, but get: " + strconv.Itoa(len(args)))
+	}
+	return args[0] * args[1] , nil
+}
 
-func mult(vars ...float64) float64        { return vars[0] * vars[1] }
-func div(vars ...float64) float64         { return vars[0] / vars[1] }
-func pow(vars ...float64) float64         { return math.Pow(vars[0], vars[1]) }
-func divReminder(vars ...float64) float64 { return float64(int(vars[0]) % int(vars[1])) }
+func div(args ...float64) (float64, error) {
+	if len(args) != 2 {
+		return 0, errors.New("incorrect count of args for division operator. Need: 2, but get: " + strconv.Itoa(len(args)))
+	}
+	if args[1] == 0.0 {
+		return 0, errors.New("incorrect divisor for division operator")
+	}
 
-func sum(vars ...float64) float64 { return vars[0] + vars[1] }
-func sub(vars ...float64) float64 { return vars[0] - vars[1] }
+	return args[0] / args[1], nil
+}
+
+func pow(args ...float64) (float64, error) {
+	if len(args) != 2 {
+		return 0, errors.New("incorrect count of args for power operator. Need: 2, but get: " + strconv.Itoa(len(args)))
+	}
+	return math.Pow(args[0], args[1]), nil
+}
+
+func divReminder(args ...float64) (float64, error) {
+	if len(args) != 2 {
+		return 0, errors.New("incorrect count of args for % operator. Need: 2, but get: " + strconv.Itoa(len(args)))
+	}
+	if args[1] == 0.0 {
+		return 0, errors.New("incorrect divisor for % operator")
+	}
+	return float64(int(args[0]) % int(args[1])), nil
+}
+
+func sum(args ...float64) (float64, error) {
+	if len(args) != 2 {
+		return 0, errors.New("incorrect count of args for sum operator. Need: 2, but get: " + strconv.Itoa(len(args)))
+	}
+	return args[0] + args[1], nil
+}
+
+func sub(args ...float64) (float64, error) {
+	if len(args) != 2 {
+		return 0, errors.New("incorrect count of args for subtract operator. Need: 2, but get: " + strconv.Itoa(len(args)))
+	}
+	return args[0] - args[1], nil
+}
