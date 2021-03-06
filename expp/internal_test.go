@@ -16,6 +16,7 @@ func fuzzyEqual(a, b float64) bool {
 }
 func TestBase(t *testing.T) {
 	const size = 5
+	// TODO: combine input and output to struct
 	input := [size]string{"", "10+50+5", "2*2+2", "2*(2+2)", "100+sqrt(3^2+(2*2+3))"}
 	output := [size]float64{0.0, 65, 6, 8, 104}
 
