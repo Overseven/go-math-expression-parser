@@ -9,7 +9,7 @@ s2 := "x1^(-1)"
 s3 := "(price - purchasePrice) * numOfGoods * 0.87"
 ```
 
-To parse expression call `expp.ParseStr` function. `expp.Exp` string conversation gives prefix [style operation representation](http://www.cs.man.ac.uk/~pjj/cs212/fix.html) 
+To parse expression call `expp.ParseStr` function. `expp.Exp` string conversation gives [prefix style operation representation](http://www.cs.man.ac.uk/~pjj/cs212/fix.html) 
 ```go
 exp1, _ := expp.ParseStr(s1)
 fmt.Println("Parsed expression: ", exp1)
