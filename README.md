@@ -2,8 +2,8 @@
 
 ## Contents
 - [Supported operations](#supported-operations)
+- [Examples](#examples)
 - [User-defined function](#user-defined-functions)
-- [Examples of usage](#examples)
 - [Todo](#todo)
 
 ## Supported operations
@@ -15,7 +15,7 @@ This parser supports some elements of math expressions:
 - functions `sqrt(x), abs(x)`
 - user defined functions with a comma-separated list of arguments
  
-## Example
+## Examples
 This part contains the example of parsing and evaluating for four expressions:
 ```go
 // examples of expressions to parse
