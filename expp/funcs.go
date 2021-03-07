@@ -20,6 +20,7 @@ var (
 			"+":    unarySum,
 			"-":    unarySub,
 			"sqrt": sqrt,
+			"abs": abs,
 		},
 		{
 			"*": mult,
@@ -55,6 +56,13 @@ func sqrt(args ...float64) (float64, error) {
 		return 0, errors.New("'sqrt' function argument is negative: " + fmt.Sprintf("%f", args[0]))
 	}
 	return math.Sqrt(args[0]), nil
+}
+
+func abs(args ...float64) (float64, error) {
+	if len(args) != 1 {
+		return 0, errors.New("incorrect count of args for 'abs' function. Need: 1, but get: " + strconv.Itoa(len(args)))
+	}
+	return math.Abs(args[0]), nil
 }
 
 func mult(args ...float64) (float64, error) {
