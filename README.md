@@ -132,6 +132,8 @@ func main() {
     
     // execution of the expression
     result, err := exp.Evaluate(map[string]float64{})
+    // output: 'Foo was called!'
+    
     if err != nil {
         fmt.Println("Error: ", err)
     }
