@@ -15,13 +15,21 @@ func fuzzyEqual(a, b float64) bool {
 	return math.Abs(a - b) <= float64EqualityThreshold
 }
 func TestBase(t *testing.T) {
-	const size = 5
-	// TODO: combine input and output to struct
-	input := [size]string{"", "10+50+5", "2*2+2", "2*(2+2)", "100+sqrt(3^2+(2*2+3))"}
-	output := [size]float64{0.0, 65, 6, 8, 104}
+	type TestData struct{
+		input string
+		output float64
+	}
 
-	for i:= 0; i<size; i++ {
-		exp, err := ParseStr(input[i])
+	data := []TestData{
+		{"", 0.0},
+		{"10+50+5", 65},
+		{"2*2+2", 6},
+		{"2*(2+2)", 8},
+		{"100+sqrt(3^2+(2*2+3))", 104},
+	}
+
+	for _, d := range data {
+		exp, err := ParseStr(d.input)
 		if err != nil {
 			t.Error(err)
 		}
@@ -29,8 +37,8 @@ func TestBase(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		if !fuzzyEqual(res, output[i]) {
-			t.Error("incorrect result, need: " + fmt.Sprintf("%f", output[i]) + ", but get: " + fmt.Sprintf("%f", res))
+		if !fuzzyEqual(res, d.output) {
+			t.Error("incorrect result, need: " + fmt.Sprintf("%f", d.output) + ", but get: " + fmt.Sprintf("%f", res))
 		}
 	}
 }
@@ -61,18 +69,21 @@ func TestGetVarList(t *testing.T) {
 		}
 		return nil
 	}
-	const size = 4
-	input := [size]string{"", "x", "x*(sqrt(y)+1)", "(доход-расход)*налог"}
 
-	output := [size][]string{
-		{},
-		{"x"},
-		{"x", "y"},
-		{"доход", "расход", "налог"},
+	type TestData struct{
+		input  string
+		output []string
 	}
 
-	for i := 0; i < size; i++ {
-		exp, err := ParseStr(input[i])
+	data := []TestData{
+		{"", []string{}},
+		{"x", []string{"x"}},
+		{"x*(sqrt(y)+1)", []string{"x", "y"}},
+		{"(доход-расход)*налог", []string{"доход", "расход", "налог"}},
+	}
+
+	for _, d := range data {
+		exp, err := ParseStr(d.input)
 		if err != nil {
 			t.Error(err)
 		}
@@ -81,7 +92,7 @@ func TestGetVarList(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		err = isEqual(res, output[i])
+		err = isEqual(res, d.output)
 		if err != nil {
 			t.Error(err)
 		}
@@ -89,26 +100,31 @@ func TestGetVarList(t *testing.T) {
 }
 
 func TestEvalWithVars(t *testing.T) {
-	const size = 4
-	input := [size]string{"x+y", "x+(-y)", "x1*(x2^2)", "(доход-расход)*налог"}
-	vars := [size]map[string]float64{
-		{"x" :7.7, 	  "y" : 1.2},
-		{"x" :100.0,  "y" : 12.0},
-		{"x1":-100.0, "x2": 7.0},
-		{"доход":1520, "расход": 840, "налог": 0.87},
+	type TestVars map[string]float64
+	type TestData struct{
+		input  string
+		vars   TestVars
+		output float64
 	}
-	output := [size]float64{8.9, 88.0, -4900, 591.6}
-	for i:= 0; i < size; i++ {
-		exp, err := ParseStr(input[i])
+
+	data := []TestData{
+		{"x+y",TestVars{"x": 7.7, "y": 1.2},8.9},
+		{"x+(-y)",TestVars{"x": 100.0,  "y": 12.0},88},
+		{"x1*(x2^2)",TestVars{"x1": -100.0, "x2": 7.0},-4900},
+		{"(доход-расход)*налог",TestVars{"доход": 1520, "расход": 840, "налог": 0.87},591.6},
+	}
+
+	for _, d := range data {
+		exp, err := ParseStr(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res, err := exp.Evaluate(vars[i])
+		res, err := exp.Evaluate(d.vars)
 		if err != nil {
 			t.Error(err)
 		}
-		if !fuzzyEqual(res, output[i]) {
-			t.Error("incorrect result, need: " + fmt.Sprintf("%f", output[i]) + ", but get: " + fmt.Sprintf("%f", res))
+		if !fuzzyEqual(res, d.output) {
+			t.Error("incorrect result, need: " + fmt.Sprintf("%f", d.output) + ", but get: " + fmt.Sprintf("%f", res))
 		}
 	}
 }
@@ -123,50 +139,42 @@ func TestUserFunction(t *testing.T) {
 	AddFunction(func1, "func1")
 	AddFunction(func2, "func2")
 
-	const size = 4
-	input := [size]string{
-		"func1(2, 3, 1)",
-		"func1(2^x, y, (x+y))",
-		"func2(600, 60, 6)",
-		"func2(func2(700,70,7), 222, -8)",
-	}
-	vars  := [size]map[string]float64{
-		{},
-		{"x" :3,  "y" : 5.1},
-		{},
-		{},
-	}
-	output := [size]float64{
-		5.0,
-		32.7,
-		666,
-		991,
+	type TestVars map[string]float64
+	type TestData struct{
+		input  string
+		vars   TestVars
+		output float64
 	}
 
-	for i:= 0; i < size; i++ {
-		exp, err := ParseStr(input[i])
+	data := []TestData{
+		{"func1(2, 3, 1)", TestVars{}, 5.0},
+		{"func1(2^x, y, (x+y))", TestVars{"x": 3, "y": 5.1}, 32.7},
+		{"func2(600, 60, 6)", TestVars{}, 666},
+		{"func2(func2(700,70,7), 222, -8)", TestVars{}, 991},
+	}
+
+	for _, d := range data {
+		exp, err := ParseStr(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res, err := exp.Evaluate(vars[i])
+		res, err := exp.Evaluate(d.vars)
 		if err != nil {
 			t.Error(err)
 		}
-		if !fuzzyEqual(res, output[i]) {
-			t.Error("incorrect result, need: " + fmt.Sprintf("%f", output[i]) + ", but get: " + fmt.Sprintf("%f", res))
+		if !fuzzyEqual(res, d.output) {
+			t.Error("incorrect result, need: " + fmt.Sprintf("%f", d.output) + ", but get: " + fmt.Sprintf("%f", res))
 		}
 	}
 }
 
 func TestParenthesisIsCorrect(t *testing.T) {
-	type ParTest struct{
+	type TestData struct{
 		s string
 		correct bool
 	}
 
-	const size = 9
-
-	data := [size]ParTest{
+	data := []TestData{
 		{"", true},
 		{"()", true},
 		{")(", false},
