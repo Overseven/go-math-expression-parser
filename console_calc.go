@@ -22,7 +22,7 @@ func Foo(a ...float64) (float64, error) {
 func main() {
 	// add flag to print example
 	exampleFlag := flag.Bool("example", false, "print example of usage")
-
+	treeFlag := flag.Bool("tree", false, "print parsed tree execution")
 	flag.Parse()
 
 	if *exampleFlag {
@@ -45,9 +45,16 @@ func main() {
 
 	// parsing expression
 	exp, err := expp.ParseStr(formula)
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
+	}
 
-	// print parsed tree
-	fmt.Println("\nParsed tree:", exp)
+	// print parsed tree if flag -tree is presented
+	if *treeFlag {
+		fmt.Println("\nParsed execution tree:", exp)
+		return
+	}
 
 	// get list of the variables used in the expression
 	varsNeeded := expp.GetVarList(exp)
