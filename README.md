@@ -30,14 +30,14 @@ parser := expp.NewParser()
 To parse expression call `parser.Parse()` function. `expp.Exp` string conversation returns string with [prefix style operation notation](http://www.cs.man.ac.uk/~pjj/cs212/fix.html) 
 ```go
 exp, _ := parser.Parse(s3)
-fmt.Println("Parsed execution tree: ", exp3)
+fmt.Println("Parsed execution tree: ", exp)
 // Parsed execution tree: ( * ( * ( - price purchasePrice ) numOfGoods ) 0.87 )
 ```
 
 To get sorted list of all variables used in the expression call ``expp.GetVarList()`` function:
 ```go
-vars3 := expp.GetVarList(exp3)
-fmt.Println("Variables: ", vars3)
+vars := expp.GetVarList(exp)
+fmt.Println("Variables: ", vars)
 // Variables: [numOfGoods price purchasePrice]
 ```
 All variables must be defined to calculate an expression result:
