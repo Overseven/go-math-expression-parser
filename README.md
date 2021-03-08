@@ -1,4 +1,4 @@
-# EXPP - tiny math expression parser
+# expp - tiny math expression parser
 
 ## Contents
 - [Supported operations](#supported-operations)
