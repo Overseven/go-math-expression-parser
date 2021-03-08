@@ -11,7 +11,7 @@ This parser supports some elements of math expressions:
 - unary operators `+, -`
 - binary operators `+, -, *, /, ^, %`
 - any variables without spaces and operator symbols
-- parenthesis `10*(x+4)`
+- parenthesis `10*(x%(4+y))`
 - functions `sqrt(x), abs(x)`
 - user defined functions with a comma-separated list of arguments
  
@@ -29,7 +29,7 @@ parser := expp.NewParser()
 
 To parse expression call `parser.Parse()` function. `expp.Exp` string conversation returns string with [prefix style operation notation](http://www.cs.man.ac.uk/~pjj/cs212/fix.html) 
 ```go
-exp, _ := parser.Parse(s3)
+exp, _ := parser.Parse(s)
 fmt.Println("Parsed execution tree: ", exp)
 // Parsed execution tree: ( * ( * ( - price purchasePrice ) numOfGoods ) 0.87 )
 ```
