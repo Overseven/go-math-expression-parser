@@ -12,41 +12,16 @@ func prepareString(str string) string {
 	return str
 }
 
-// toString conversation
-func (t Term) String() string {
-	return t.Val
-}
-
-// toString conversation
-func (n Node) String() string {
-	return "( " + string(n.Op) + " " + n.LExp.String() + " " + n.RExp.String() + " )"
-}
-
-// toString conversation
-func (u Unary) String() string {
-	return "( " + string(u.Op) + " " + u.exp.String() + " )"
-}
-
-// toString conversation
-func (f Func) String() string {
-	str := ""
-	for _, arg := range f.args {
-		str += arg.String() + ","
-	}
-	str = str[:len(str)-1]
-	return "( " + string(f.Op) + " ( " + str + " ) )"
-}
-
-func (n Node) getVarList(vars map[string]interface{}) {
+func (n *Node) getVarList(vars map[string]interface{}) {
 	n.LExp.getVarList(vars)
 	n.RExp.getVarList(vars)
 }
 
-func (u Unary) getVarList(vars map[string]interface{}) {
+func (u *Unary) getVarList(vars map[string]interface{}) {
 	u.exp.getVarList(vars)
 }
 
-func (t Term) getVarList(vars map[string]interface{}) {
+func (t *Term) getVarList(vars map[string]interface{}) {
 	if t.Val == "" {
 		return
 	}
@@ -57,36 +32,36 @@ func (t Term) getVarList(vars map[string]interface{}) {
 
 }
 
-func (f Func) getVarList(vars map[string]interface{}) {
+func (f *Func) getVarList(vars map[string]interface{}) {
 	for _, term := range f.args {
 		term.getVarList(vars)
 	}
 }
 
-func unaryOperatorExist(op string) (index int, exist bool) {
-	if _, ok := priority[0][op]; ok {
+func unaryOperatorExist(op string, p *Parser) (index int, exist bool) {
+	if _, ok := p.operators[0][op]; ok {
 		return 0, true
 	}
 	return -1, false
 }
 
-func binaryOperatorExist(op string) (index int, exist bool) {
+func binaryOperatorExist(op string, p *Parser) (index int, exist bool) {
 	for i:= 1; i<=2; i++ {
-		if _, ok := priority[i][op]; ok {
+		if _, ok := p.operators[i][op]; ok {
 			return i, true
 		}
 	}
 	return -1, false
 }
 
-func parseFunc(str []rune) (f Func, isFunc bool, err error) {
+func (p *Parser)parseFunc(str []rune) (f Func, isFunc bool, err error) {
 	ind := strings.IndexRune(string(str), '(')
 	var args [][]rune
 	if ind <= 0 {
 		return Func{}, false, nil
 	}
 	f.Op = string(str[:ind])
-	if _, ok := priority[0][f.Op]; !ok {
+	if _, ok := p.operators[0][f.Op]; !ok {
 		return Func{}, false, errors.New("function '" + f.Op + "' is not supported")
 	}
 
@@ -129,7 +104,7 @@ func parseFunc(str []rune) (f Func, isFunc bool, err error) {
 	// fmt.Println("End func " + f.Op + " args.")
 
 	for _, elem := range args {
-		arg, err := parseStr(elem)
+		arg, err := p.parseStr(elem)
 		if err != nil {
 			return f, true, err
 		}
@@ -139,9 +114,9 @@ func parseFunc(str []rune) (f Func, isFunc bool, err error) {
 	return f, true, nil
 }
 
-func parseStr(str []rune) (Exp, error) {
+func (p *Parser)parseStr(str []rune) (Exp, error) {
 	if len(str) == 0 {
-		return Term{"0"}, nil
+		return &Term{"0"}, nil
 	}
 	level := 0
 
@@ -159,36 +134,36 @@ func parseStr(str []rune) (Exp, error) {
 			if level > 0 {
 				continue
 			}
-			if _, ok := priority[priorityLevel][string(c)]; ok {
+			if _, ok := p.operators[priorityLevel][string(c)]; ok {
 				if i > 0 {
 					left := str[0:i]
 					right := str[i+1:]
-					resL, err := parseStr(left)
+					resL, err := p.parseStr(left)
 					if err != nil {
 						return nil, err
 					}
-					resR, err := parseStr(right)
+					resR, err := p.parseStr(right)
 					if err != nil {
 						return nil, err
 					}
-					return Node{string(c), resL, resR}, nil
+					return &Node{string(c), resL, resR}, nil
 				} else{
 					right := str[i+1:]
-					resR, err := parseStr(right)
+					resR, err := p.parseStr(right)
 					if err != nil {
 						return nil, err
 					}
-					return Unary{string(c), resR}, nil
+					return &Unary{string(c), resR}, nil
 				}
 			}
 		}
 	}
 
 	// parse func
-	if f, isFunc, err := parseFunc(str); err != nil {
+	if f, isFunc, err := p.parseFunc(str); err != nil {
 		return nil, err
 	} else if isFunc {
-		return f, nil
+		return &f, nil
 	}
 
 	if str[0] == '(' {
@@ -201,13 +176,13 @@ func parseStr(str []rune) (Exp, error) {
 				level--
 				if level == 0 {
 					exp := str[1:i]
-					return parseStr(exp)
+					return p.parseStr(exp)
 				}
 				continue
 			}
 		}
 	} else {
-		return Term{string(str)}, nil
+		return &Term{string(str)}, nil
 	}
 	return nil, errors.New("unknow internal error")
 }

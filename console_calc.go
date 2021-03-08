@@ -22,7 +22,7 @@ func Foo(a ...float64) (float64, error) {
 func main() {
 	// add flag to print example
 	exampleFlag := flag.Bool("example", false, "print example of usage")
-	treeFlag := flag.Bool("tree", false, "print parsed tree execution")
+	treeFlag := flag.Bool("tree", false, "print parsed tree of execution")
 	flag.Parse()
 
 	if *exampleFlag {
@@ -30,10 +30,11 @@ func main() {
 		return
 	}
 
+	parser := expp.NewParser()
 	// add user function for parsing
-	expp.AddFunction(Foo, "foo")
+	parser.AddFunction(Foo, "foo")
 
-	fmt.Println("Input math expression:")
+	fmt.Println("Input a math expression:")
 
 	// input expression
 	reader := bufio.NewReader(os.Stdin)
@@ -44,7 +45,7 @@ func main() {
 	}
 
 	// parsing expression
-	exp, err := expp.ParseStr(formula)
+	exp, err := parser.Parse(formula)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
@@ -53,11 +54,10 @@ func main() {
 	// print parsed tree if flag -tree is presented
 	if *treeFlag {
 		fmt.Println("\nParsed execution tree:", exp)
-		return
 	}
 
 	// get list of the variables used in the expression
-	varsNeeded := expp.GetVarList(exp)
+	varsNeeded := expp.GetVarList(&exp)
 
 	// create [variable]value map to execute the expression
 	vars := make(map[string]float64)
@@ -75,7 +75,7 @@ func main() {
 	}
 
 	// execute the expression using values of variables
-	result, err := exp.Evaluate(vars)
+	result, err := parser.Evaluate(vars)
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}

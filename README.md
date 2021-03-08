@@ -2,8 +2,8 @@
 
 ## Contents
 - [Supported operations](#supported-operations)
+- [Example of usage](#example)
 - [User-defined function](#user-defined-functions)
-- [Examples of usage](#examples)
 - [Todo](#todo)
 
 ## Supported operations
@@ -16,87 +16,48 @@ This parser supports some elements of math expressions:
 - user defined functions with a comma-separated list of arguments
  
 ## Example
-This part contains the example of parsing and evaluating for four expressions:
+This part contains the example of parsing and evaluating expression:
 ```go
-// examples of expressions to parse
-s1 := "x * (y%3)"
-s2 := "x1^(-1)"
-s3 := "(price - purchasePrice) * numOfGoods * 0.87"
-s4 := "sqrt(abs(-1*(2^4)))"
+s := "(price - purchasePrice) * numOfGoods * 0.87"
 ```
 
-To parse expression call `expp.ParseStr()` function. `expp.Exp` string conversation returns string with [prefix style operation notation](http://www.cs.man.ac.uk/~pjj/cs212/fix.html) 
+Create `expp.Parser` object:
 ```go
-exp1, _ := expp.ParseStr(s1)
-fmt.Println("Parsed execution tree: ", exp1)
-// Parsed execution tree: ( * x ( % y 3 ) )
+parser := expp.NewParser()
+```
 
-exp2, _ := expp.ParseStr(s2)
-fmt.Println("Parsed execution tree: ", exp2)
-// Parsed execution tree: ( ^ x1 -1 )
 
-exp3, _ := expp.ParseStr(s3)
+To parse expression call `parser.Parse()` function. `expp.Exp` string conversation returns string with [prefix style operation notation](http://www.cs.man.ac.uk/~pjj/cs212/fix.html) 
+```go
+exp, _ := parser.Parse(s3)
 fmt.Println("Parsed execution tree: ", exp3)
 // Parsed execution tree: ( * ( * ( - price purchasePrice ) numOfGoods ) 0.87 )
-
-exp4, _ := expp.ParseStr(s4)
-fmt.Println("Parsed execution tree: ", exp4)
-// Parsed execution tree: ( sqrt ( ( abs ( ( - ( * 1 ( ^ 2 4 ) ) ) ) ) ) )
 ```
 
 To get sorted list of all variables used in the expression call ``expp.GetVarList()`` function:
 ```go
-vars1 := expp.GetVarList(exp1)
-fmt.Println("Variables: ", vars1)
-// Variables: [x y]
-
-vars2 := expp.GetVarList(exp2)
-fmt.Println("Variables: ", vars2)
-// Variables: [x1]
-
 vars3 := expp.GetVarList(exp3)
 fmt.Println("Variables: ", vars3)
 // Variables: [numOfGoods price purchasePrice]
-
-vars4 := expp.GetVarList(exp4)
-fmt.Println("Variables: ", vars4)
-// Variables: []
 ```
 All variables must be defined to calculate an expression result:
 ```go
-values1 := make(map[string]float64)
-values1["x"] = 10
-values1["y"] = 2
-
-values2 := make(map[string]float64)
-values2["x1"] = 50
-
-values3 := make(map[string]float64)
-values3["numOfGoods"] = 20
-values3["price"] = 15.4
-values3["purchasePrice"] = 10.3
+values := make(map[string]float64)
+values["numOfGoods"] = 20
+values["price"] = 15.4
+values["purchasePrice"] = 10.3
 ``` 
 Getting the result of evaluation:
 ```go
-result1, _ := exp.Evaluate(values1)
-fmt.Println("Result: ", result1)
-// Result: 20
-
-result2, _ := exp.Evaluate(values2)
-fmt.Println("Result: ", result2)
-// Result: 0.02
- 
-result3, _ := exp.Evaluate(values3)
-fmt.Println("Result: ", result3)
+result, _ := parser.Evaluate(values)
+fmt.Println("Result: ", result)
 // Result: 88.74
-
-result4, _ := exp.Evaluate(map[string]float64{})
-fmt.Println("Result: ", result4)
-// Result: 4.0
 ```
+Additional example contains in the `console_calc.go` [file](https://github.com/Overseven/go-math-expression-parser/blob/main/console_calc.go)
 
 ## User-defined functions
-You can add to parser your own function and set expression string presentation name
+You can add to the parser your own function and set the expression string presentation name.
+To do this, you need to create `expp.Parser` object with using `expp.NewParser` function
 ```go
 package main
 
@@ -118,10 +79,15 @@ func Foo(a ...float64) (float64, error) {
 
 func main() {
     s := "10 * bar(60, 6, 0.6)"
-    expp.AddFunction(Foo, "bar")
+    
+    // create parser object
+    parser := expp.NewParser()
+    
+    // add function to parsing
+    parser.AddFunction(Foo, "bar")
     
     // parsing
-    exp, err := expp.ParseStr(s)
+    exp, err := parser.Parse(s)
     if err != nil {
         fmt.Println("Error: ", err)
         return
@@ -131,7 +97,7 @@ func main() {
     // output: 'Parsed execution tree: ( * 10 ( bar ( 60,6,0.6 ) ) )'
     
     // execution of the expression
-    result, err := exp.Evaluate(map[string]float64{})
+    result, err := parser.Evaluate(map[string]float64{})
     if err != nil {
         fmt.Println("Error: ", err)
     }
@@ -147,4 +113,4 @@ func main() {
 - [x] comma-separated list of arguments
 - [x] [user-defined functions](#user-defined-functions)
 - [x] tests
-- [ ] create struct `expp.Parser`, which contains parser context with included user-defined functions  
+- [x] create struct `expp.Parser`, which contains parser context with included user-defined functions  

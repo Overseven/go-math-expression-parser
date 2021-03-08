@@ -27,13 +27,13 @@ func TestBase(t *testing.T) {
 		{"2*(2+2)", 8},
 		{"100+sqrt(3^2+(2*2+3))", 104},
 	}
-
+	parser := NewParser()
 	for _, d := range data {
-		exp, err := ParseStr(d.input)
+		_, err := parser.Parse(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res, err := exp.Evaluate(map[string]float64{})
+		res, err := parser.Evaluate(map[string]float64{})
 		if err != nil {
 			t.Error(err)
 		}
@@ -82,12 +82,14 @@ func TestGetVarList(t *testing.T) {
 		{"(доход-расход)*налог", []string{"доход", "расход", "налог"}},
 	}
 
+	parser := NewParser()
+
 	for _, d := range data {
-		exp, err := ParseStr(d.input)
+		exp, err := parser.Parse(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res := GetVarList(exp)
+		res := GetVarList(&exp)
 		err = allElemsIsUnique(res)
 		if err != nil {
 			t.Error(err)
@@ -114,12 +116,14 @@ func TestEvalWithVars(t *testing.T) {
 		{"(доход-расход)*налог",TestVars{"доход": 1520, "расход": 840, "налог": 0.87},591.6},
 	}
 
+	parser := NewParser()
+
 	for _, d := range data {
-		exp, err := ParseStr(d.input)
+		_, err := parser.Parse(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res, err := exp.Evaluate(d.vars)
+		res, err := parser.Evaluate(d.vars)
 		if err != nil {
 			t.Error(err)
 		}
@@ -136,8 +140,9 @@ func TestUserFunction(t *testing.T) {
 	func2 := func(args...float64)(float64, error) {
 		return args[0] + args[1] + args[2], nil
 	}
-	AddFunction(func1, "func1")
-	AddFunction(func2, "func2")
+	parser := NewParser()
+	parser.AddFunction(func1, "func1")
+	parser.AddFunction(func2, "func2")
 
 	type TestVars map[string]float64
 	type TestData struct{
@@ -154,11 +159,11 @@ func TestUserFunction(t *testing.T) {
 	}
 
 	for _, d := range data {
-		exp, err := ParseStr(d.input)
+		_, err := parser.Parse(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res, err := exp.Evaluate(d.vars)
+		res, err := parser.Evaluate(d.vars)
 		if err != nil {
 			t.Error(err)
 		}
@@ -193,4 +198,85 @@ func TestParenthesisIsCorrect(t *testing.T) {
 		}
 	}
 
+}
+
+func TestNewParser(t *testing.T) {
+	func1 := func(args...float64) (float64, error) {
+		return args[0] + 100, nil
+	}
+	func2 := func(args...float64)(float64, error) {
+		return args[0] + 200, nil
+	}
+	parser1 := NewParser()
+	parser2 := NewParser()
+	parser1.AddFunction(func1, "f1")
+	parser1.AddFunction(func2, "f2")
+
+	parser2.AddFunction(func1, "f2")
+	parser2.AddFunction(func2, "f1")
+
+	data := []string{"f1(1)", "f2(2)"}
+
+	parser1.Parse(data[0])
+	res, err := parser1.Evaluate(map[string]float64{})
+	if err != nil {
+		t.Error(err)
+	}
+	if !fuzzyEqual(res, 101){
+		t.Error("incorrect parser1 result, need: 101.0, but get: " + fmt.Sprintf("%f", res))
+	}
+
+	parser1.Parse(data[1])
+	res, err = parser1.Evaluate(map[string]float64{})
+	if err != nil {
+		t.Error(err)
+	}
+	if !fuzzyEqual(res, 202) {
+		t.Error("incorrect parser1 result, need: 202.0, but get: " + fmt.Sprintf("%f", res))
+	}
+
+	parser2.Parse(data[0])
+	res, err = parser2.Evaluate(map[string]float64{})
+	if err != nil {
+		t.Error(err)
+	}
+	if !fuzzyEqual(res, 201) {
+		t.Error("incorrect parser2 result, need: 201.0, but get: " + fmt.Sprintf("%f", res))
+	}
+
+	parser2.Parse(data[1])
+	res, err = parser2.Evaluate(map[string]float64{})
+	if err != nil {
+		t.Error(err)
+	}
+	if !fuzzyEqual(res, 102) {
+		t.Error("incorrect parser2 result, need: 102.0, but get: " + fmt.Sprintf("%f", res))
+	}
+}
+
+func TestNewParser2(t *testing.T) {
+	parser := NewParser()
+	type TestData struct{
+		input  string
+		output float64
+	}
+	data := []TestData{
+		{"15+20", 35},
+		{"2^3-10", -2},
+		{"sqrt(14+(4^(0.5)))", 4},
+	}
+
+	for _, d := range data {
+		_, err := parser.Parse(d.input)
+		if err != nil {
+			t.Error(err)
+		}
+		res, err := parser.Evaluate(map[string]float64{})
+		if err != nil {
+			t.Error(err)
+		}
+		if !fuzzyEqual(res, d.output) {
+			t.Error("incorrect result, need: " + fmt.Sprintf("%f", d.output) + ", but get: " + fmt.Sprintf("%f", res))
+		}
+	}
 }
