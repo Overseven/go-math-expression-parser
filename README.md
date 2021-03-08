@@ -53,7 +53,7 @@ result, _ := parser.Evaluate(values)
 fmt.Println("Result: ", result)
 // Result: 88.74
 ```
-Additional example contains in the `console_calc.go` [file](https://github.com/Overseven/go-math-expression-parser/blob/main/console_calc.go)
+The additional example is contained in the `console_calc.go` [file](https://github.com/Overseven/go-math-expression-parser/blob/main/console_calc.go)
 
 ## User-defined functions
 You can add to the parser your own function and set the expression string presentation name.
