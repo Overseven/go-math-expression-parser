@@ -67,7 +67,7 @@ import (
 	"github.com/Overseven/go-math-expression-parser/expp"
 )
 
-// Foo - example of user define function
+// Foo - example of user-defined function
 func Foo(a ...float64) (float64, error) {
 	fmt.Println("Foo was called!")
 	var sum float64
