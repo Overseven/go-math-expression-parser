@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// Parser - context structure, wich contains user-defined function
 type Parser struct {
 	operators  [levelsOfPriorities]map[string]FuncType
 	expression Exp

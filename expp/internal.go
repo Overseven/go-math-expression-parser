@@ -147,14 +147,13 @@ func (p *Parser) parseStr(str []rune) (Exp, error) {
 						return nil, err
 					}
 					return &Node{string(c), resL, resR}, nil
-				} else {
-					right := str[i+1:]
-					resR, err := p.parseStr(right)
-					if err != nil {
-						return nil, err
-					}
-					return &Unary{string(c), resR}, nil
 				}
+				right := str[i+1:]
+				resR, err := p.parseStr(right)
+				if err != nil {
+					return nil, err
+				}
+				return &Unary{string(c), resR}, nil
 			}
 		}
 	}
