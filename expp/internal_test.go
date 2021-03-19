@@ -12,11 +12,11 @@ import (
 const float64EqualityThreshold = 1e-9
 
 func fuzzyEqual(a, b float64) bool {
-	return math.Abs(a - b) <= float64EqualityThreshold
+	return math.Abs(a-b) <= float64EqualityThreshold
 }
 func TestBase(t *testing.T) {
-	type TestData struct{
-		input string
+	type TestData struct {
+		input  string
 		output float64
 	}
 
@@ -54,9 +54,9 @@ func TestGetVarList(t *testing.T) {
 		}
 		return nil
 	}
-	isEqual := func(arr1, arr2 []string) error{
-		if len(arr1) != len(arr2){
-			return errors.New("different arrays size. "+
+	isEqual := func(arr1, arr2 []string) error {
+		if len(arr1) != len(arr2) {
+			return errors.New("different arrays size. " +
 				"len(arr1): " + strconv.Itoa(len(arr1)) +
 				", len(arr2): " + strconv.Itoa(len(arr2)))
 		}
@@ -70,7 +70,7 @@ func TestGetVarList(t *testing.T) {
 		return nil
 	}
 
-	type TestData struct{
+	type TestData struct {
 		input  string
 		output []string
 	}
@@ -103,17 +103,17 @@ func TestGetVarList(t *testing.T) {
 
 func TestEvalWithVars(t *testing.T) {
 	type TestVars map[string]float64
-	type TestData struct{
+	type TestData struct {
 		input  string
 		vars   TestVars
 		output float64
 	}
 
 	data := []TestData{
-		{"x+y",TestVars{"x": 7.7, "y": 1.2},8.9},
-		{"x+(-y)",TestVars{"x": 100.0,  "y": 12.0},88},
-		{"x1*(x2^2)",TestVars{"x1": -100.0, "x2": 7.0},-4900},
-		{"(доход-расход)*налог",TestVars{"доход": 1520, "расход": 840, "налог": 0.87},591.6},
+		{"x+y", TestVars{"x": 7.7, "y": 1.2}, 8.9},
+		{"x+(-y)", TestVars{"x": 100.0, "y": 12.0}, 88},
+		{"x1*(x2^2)", TestVars{"x1": -100.0, "x2": 7.0}, -4900},
+		{"(доход-расход)*налог", TestVars{"доход": 1520, "расход": 840, "налог": 0.87}, 591.6},
 	}
 
 	parser := NewParser()
@@ -134,10 +134,10 @@ func TestEvalWithVars(t *testing.T) {
 }
 
 func TestUserFunction(t *testing.T) {
-	func1 := func(args...float64) (float64, error) {
-		return args[0] * args[1] - args[2], nil
+	func1 := func(args ...float64) (float64, error) {
+		return args[0]*args[1] - args[2], nil
 	}
-	func2 := func(args...float64)(float64, error) {
+	func2 := func(args ...float64) (float64, error) {
 		return args[0] + args[1] + args[2], nil
 	}
 	parser := NewParser()
@@ -145,7 +145,7 @@ func TestUserFunction(t *testing.T) {
 	parser.AddFunction(func2, "func2")
 
 	type TestVars map[string]float64
-	type TestData struct{
+	type TestData struct {
 		input  string
 		vars   TestVars
 		output float64
@@ -174,8 +174,8 @@ func TestUserFunction(t *testing.T) {
 }
 
 func TestParenthesisIsCorrect(t *testing.T) {
-	type TestData struct{
-		s string
+	type TestData struct {
+		s       string
 		correct bool
 	}
 
@@ -191,7 +191,7 @@ func TestParenthesisIsCorrect(t *testing.T) {
 		{"(func2(func2(700,70,7), 222, -8)", false},
 	}
 	for i, d := range data {
-		if _, cor := ParenthesisIsCorrect(d.s); cor != data[i].correct{
+		if _, cor := ParenthesisIsCorrect(d.s); cor != data[i].correct {
 			t.Error("incorrect result for " + strconv.Itoa(i) + " case: '" + d.s +
 				"'. Need: " + strconv.FormatBool(data[i].correct) +
 				", but get: " + strconv.FormatBool(cor))
@@ -201,10 +201,10 @@ func TestParenthesisIsCorrect(t *testing.T) {
 }
 
 func TestNewParser(t *testing.T) {
-	func1 := func(args...float64) (float64, error) {
+	func1 := func(args ...float64) (float64, error) {
 		return args[0] + 100, nil
 	}
-	func2 := func(args...float64)(float64, error) {
+	func2 := func(args ...float64) (float64, error) {
 		return args[0] + 200, nil
 	}
 	parser1 := NewParser()
@@ -222,7 +222,7 @@ func TestNewParser(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !fuzzyEqual(res, 101){
+	if !fuzzyEqual(res, 101) {
 		t.Error("incorrect parser1 result, need: 101.0, but get: " + fmt.Sprintf("%f", res))
 	}
 
@@ -256,7 +256,7 @@ func TestNewParser(t *testing.T) {
 
 func TestNewParser2(t *testing.T) {
 	parser := NewParser()
-	type TestData struct{
+	type TestData struct {
 		input  string
 		output float64
 	}

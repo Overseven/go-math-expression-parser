@@ -22,7 +22,7 @@ var (
 			"+":    unarySum,
 			"-":    unarySub,
 			"sqrt": sqrt,
-			"abs": abs,
+			"abs":  abs,
 		},
 		{
 			"*": mult,
@@ -71,7 +71,7 @@ func mult(args ...float64) (float64, error) {
 	if len(args) != 2 {
 		return 0, errors.New("incorrect count of args for multiplication operator. Need: 2, but get: " + strconv.Itoa(len(args)))
 	}
-	return args[0] * args[1] , nil
+	return args[0] * args[1], nil
 }
 
 func div(args ...float64) (float64, error) {

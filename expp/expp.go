@@ -6,9 +6,8 @@ import (
 	"strconv"
 )
 
-
-type Parser struct{
-	operators [levelsOfPriorities]map[string]FuncType
+type Parser struct {
+	operators  [levelsOfPriorities]map[string]FuncType
 	expression Exp
 }
 
@@ -47,7 +46,7 @@ type Func struct {
 func NewParser() *Parser {
 	p := new(Parser)
 
-	for i, _ := range p.operators {
+	for i := range p.operators {
 		p.operators[i] = make(map[string]FuncType)
 		for key, f := range defaultOperators[i] {
 			p.operators[i][key] = f
@@ -58,17 +57,17 @@ func NewParser() *Parser {
 }
 
 // AddFunction - add user's function and it string representation
-func (p *Parser)AddFunction(f FuncType, s string) {
+func (p *Parser) AddFunction(f FuncType, s string) {
 	p.operators[0][s] = f
 }
 
 // AddFunction - add user's function and it string representation
-func (p *Parser)String() string{
+func (p *Parser) String() string {
 	return p.expression.String()
 }
 
 // Parse - parsing a string format math expression, return Exp tree
-func (p *Parser)Parse(str string) (Exp, error) {
+func (p *Parser) Parse(str string) (Exp, error) {
 	if indx, ok := ParenthesisIsCorrect(str); !ok {
 		return nil, errors.New("incorrect parenthesis at " + strconv.Itoa(indx) + " position")
 	}
@@ -184,7 +183,6 @@ func ParenthesisIsCorrect(str string) (index int, correct bool) {
 	}
 	return -1, true
 }
-
 
 // toString conversation
 func (t *Term) String() string {

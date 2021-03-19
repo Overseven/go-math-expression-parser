@@ -46,7 +46,7 @@ func unaryOperatorExist(op string, p *Parser) (index int, exist bool) {
 }
 
 func binaryOperatorExist(op string, p *Parser) (index int, exist bool) {
-	for i:= 1; i<=2; i++ {
+	for i := 1; i <= 2; i++ {
 		if _, ok := p.operators[i][op]; ok {
 			return i, true
 		}
@@ -54,7 +54,7 @@ func binaryOperatorExist(op string, p *Parser) (index int, exist bool) {
 	return -1, false
 }
 
-func (p *Parser)parseFunc(str []rune) (f Func, isFunc bool, err error) {
+func (p *Parser) parseFunc(str []rune) (f Func, isFunc bool, err error) {
 	ind := strings.IndexRune(string(str), '(')
 	var args [][]rune
 	if ind <= 0 {
@@ -114,7 +114,7 @@ func (p *Parser)parseFunc(str []rune) (f Func, isFunc bool, err error) {
 	return f, true, nil
 }
 
-func (p *Parser)parseStr(str []rune) (Exp, error) {
+func (p *Parser) parseStr(str []rune) (Exp, error) {
 	if len(str) == 0 {
 		return &Term{"0"}, nil
 	}
@@ -147,7 +147,7 @@ func (p *Parser)parseStr(str []rune) (Exp, error) {
 						return nil, err
 					}
 					return &Node{string(c), resL, resR}, nil
-				} else{
+				} else {
 					right := str[i+1:]
 					resR, err := p.parseStr(right)
 					if err != nil {
