@@ -1,5 +1,7 @@
 # expp - tiny math expression parser
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/Overseven/go-math-expression-parser)](https://goreportcard.com/report/github.com/Overseven/go-math-expression-parser)
+
 ## Contents
 - [Supported operations](#supported-operations)
 - [Example of usage](#example)
