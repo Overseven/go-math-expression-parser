@@ -1,6 +1,7 @@
 # expp - tiny math expression parser
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/Overseven/go-math-expression-parser)](https://goreportcard.com/report/github.com/Overseven/go-math-expression-parser)
+[![Coverage Status](https://coveralls.io/repos/github/Overseven/go-math-expression-parser/badge.svg?branch=main)](https://coveralls.io/github/Overseven/go-math-expression-parser?branch=main)
 
 ## Contents
 - [Supported operations](#supported-operations)
