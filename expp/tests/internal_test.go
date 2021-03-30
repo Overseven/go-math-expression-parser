@@ -1,4 +1,4 @@
-package expp
+package tests
 
 import (
 	"errors"
@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strconv"
 	"testing"
+
+	"github.com/overseven/go-math-expression-parser/expp"
 )
 
 const float64EqualityThreshold = 1e-9
@@ -27,7 +29,7 @@ func TestBase(t *testing.T) {
 		{"2*(2+2)", 8},
 		{"100+sqrt(3^2+(2*2+3))", 104},
 	}
-	parser := NewParser()
+	parser := expp.NewParser()
 	for _, d := range data {
 		_, err := parser.Parse(d.input)
 		if err != nil {
@@ -82,14 +84,14 @@ func TestGetVarList(t *testing.T) {
 		{"(доход-расход)*налог", []string{"доход", "расход", "налог"}},
 	}
 
-	parser := NewParser()
+	parser := expp.NewParser()
 
 	for _, d := range data {
 		exp, err := parser.Parse(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res := GetVarList(&exp)
+		res := expp.GetVarList(&exp)
 		err = allElemsIsUnique(res)
 		if err != nil {
 			t.Error(err)
@@ -116,7 +118,7 @@ func TestEvalWithVars(t *testing.T) {
 		{"(доход-расход)*налог", TestVars{"доход": 1520, "расход": 840, "налог": 0.87}, 591.6},
 	}
 
-	parser := NewParser()
+	parser := expp.NewParser()
 
 	for _, d := range data {
 		_, err := parser.Parse(d.input)
@@ -140,7 +142,7 @@ func TestUserFunction(t *testing.T) {
 	func2 := func(args ...float64) (float64, error) {
 		return args[0] + args[1] + args[2], nil
 	}
-	parser := NewParser()
+	parser := expp.NewParser()
 	parser.AddFunction(func1, "func1")
 	parser.AddFunction(func2, "func2")
 
@@ -191,7 +193,7 @@ func TestParenthesisIsCorrect(t *testing.T) {
 		{"(func2(func2(700,70,7), 222, -8)", false},
 	}
 	for i, d := range data {
-		if _, cor := ParenthesisIsCorrect(d.s); cor != data[i].correct {
+		if _, cor := expp.ParenthesisIsCorrect(d.s); cor != data[i].correct {
 			t.Error("incorrect result for " + strconv.Itoa(i) + " case: '" + d.s +
 				"'. Need: " + strconv.FormatBool(data[i].correct) +
 				", but get: " + strconv.FormatBool(cor))
@@ -207,8 +209,8 @@ func TestNewParser(t *testing.T) {
 	func2 := func(args ...float64) (float64, error) {
 		return args[0] + 200, nil
 	}
-	parser1 := NewParser()
-	parser2 := NewParser()
+	parser1 := expp.NewParser()
+	parser2 := expp.NewParser()
 	parser1.AddFunction(func1, "f1")
 	parser1.AddFunction(func2, "f2")
 
@@ -255,7 +257,7 @@ func TestNewParser(t *testing.T) {
 }
 
 func TestNewParser2(t *testing.T) {
-	parser := NewParser()
+	parser := expp.NewParser()
 	type TestData struct {
 		input  string
 		output float64
