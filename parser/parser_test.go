@@ -155,3 +155,33 @@ func TestNewParser2(t *testing.T) {
 		}
 	}
 }
+
+
+func TestParse(t *testing.T) {
+	type TestData struct {
+		input  string
+		output float64
+	}
+
+	data := []TestData{
+		{"", 0.0},
+		{"10+50+5", 65},
+		{"2*2+2", 6},
+		{"2*(2+2)", 8},
+		{"100+sqrt(3^2+(2*2+3))", 104},
+	}
+	parser := expp.NewParser()
+	for _, d := range data {
+		_, err := parser.Parse(d.input)
+		if err != nil {
+			t.Error(err)
+		}
+		res, err := parser.Evaluate(map[string]float64{})
+		if err != nil {
+			t.Error(err)
+		}
+		if !fuzzyEqual(res, d.output) {
+			t.Error("incorrect result, need: " + fmt.Sprintf("%f", d.output) + ", but get: " + fmt.Sprintf("%f", res))
+		}
+	}
+}

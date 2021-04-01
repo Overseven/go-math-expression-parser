@@ -22,7 +22,7 @@ func (u *Unary) Evaluate(vars map[string]float64, p interfaces.ExpParser) (float
 	if err != nil {
 		return 0.0, err
 	}
-	indx, exist := unaryOperatorExist(u.Op, p)
+	indx, exist := UnaryOperatorExist(u.Op, p)
 	if !exist {
 		return 0.0, errors.New("not supported unary operation: '" + u.Op + "'")
 	}

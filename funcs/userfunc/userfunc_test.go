@@ -2,6 +2,7 @@ package userfunc_test
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 	"testing"
@@ -228,5 +229,45 @@ func TestGetArgs(t *testing.T) {
 
 	if !argsAreEqual(f2.GetArgs(), pack2) {
 		t.Error("incorrect Args")
+	}
+}
+
+func TestUserFunction(t *testing.T) {
+	func1 := func(args ...float64) (float64, error) {
+		return args[0]*args[1] - args[2], nil
+	}
+	func2 := func(args ...float64) (float64, error) {
+		return args[0] + args[1] + args[2], nil
+	}
+	pars := parser.NewParser()
+	pars.AddFunction(func1, "func1")
+	pars.AddFunction(func2, "func2")
+
+	type TestVars map[string]float64
+	type TestData struct {
+		input  string
+		vars   TestVars
+		output float64
+	}
+
+	data := []TestData{
+		{"func1(2, 3, 1)", TestVars{}, 5.0},
+		{"func1(2^x, y, (x+y))", TestVars{"x": 3, "y": 5.1}, 32.7},
+		{"func2(600, 60, 6)", TestVars{}, 666},
+		{"func2(func2(700,70,7), 222, -8)", TestVars{}, 991},
+	}
+
+	for _, d := range data {
+		_, err := pars.Parse(d.input)
+		if err != nil {
+			t.Error(err)
+		}
+		res, err := pars.Evaluate(d.vars)
+		if err != nil {
+			t.Error(err)
+		}
+		if !almostEqual(res, d.output) {
+			t.Error("incorrect result, need: " + strconv.FormatFloat(d.output, 'e',4, 64) + ", but get: " + fmt.Sprintf("%f", res))
+		}
 	}
 }

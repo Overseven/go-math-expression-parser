@@ -23,7 +23,7 @@ func (n *Node) Evaluate(vars map[string]float64, p interfaces.ExpParser) (float6
 	if err != nil {
 		return 0.0, err
 	}
-	indx, exist := binaryOperatorExist(n.Op, p)
+	indx, exist := BinaryOperatorExist(n.Op, p)
 	if !exist {
 		return 0.0, errors.New("not supported binary operation: '" + string(n.Op) + "'")
 	}
