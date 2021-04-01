@@ -19,7 +19,7 @@ type Expression interface {
 	GetVarList(vars map[string]interface{})
 }
 
-// Func - the struct which contains a function and an argument
+// Function - the struct which contains a function and an argument
 type Function interface {
 	Expression
 	SetOperation(string)
