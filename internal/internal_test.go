@@ -1,4 +1,4 @@
-package tests
+package internal_test
 
 import (
 	"errors"
@@ -8,7 +8,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/overseven/go-math-expression-parser/expp"
+	"github.com/overseven/go-math-expression-parser/internal"
+	expp "github.com/overseven/go-math-expression-parser/parser"
 )
 
 const float64EqualityThreshold = 1e-9
@@ -91,7 +92,7 @@ func TestGetVarList(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		res := expp.GetVarList(&exp)
+		res := expp.GetVarList(exp)
 		err = allElemsIsUnique(res)
 		if err != nil {
 			t.Error(err)
@@ -118,14 +119,14 @@ func TestEvalWithVars(t *testing.T) {
 		{"(доход-расход)*налог", TestVars{"доход": 1520, "расход": 840, "налог": 0.87}, 591.6},
 	}
 
-	parser := expp.NewParser()
+	pars := expp.NewParser()
 
 	for _, d := range data {
-		_, err := parser.Parse(d.input)
+		_, err := pars.Parse(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res, err := parser.Evaluate(d.vars)
+		res, err := pars.Evaluate(d.vars)
 		if err != nil {
 			t.Error(err)
 		}
@@ -142,9 +143,9 @@ func TestUserFunction(t *testing.T) {
 	func2 := func(args ...float64) (float64, error) {
 		return args[0] + args[1] + args[2], nil
 	}
-	parser := expp.NewParser()
-	parser.AddFunction(func1, "func1")
-	parser.AddFunction(func2, "func2")
+	pars := expp.NewParser()
+	pars.AddFunction(func1, "func1")
+	pars.AddFunction(func2, "func2")
 
 	type TestVars map[string]float64
 	type TestData struct {
@@ -161,11 +162,11 @@ func TestUserFunction(t *testing.T) {
 	}
 
 	for _, d := range data {
-		_, err := parser.Parse(d.input)
+		_, err := pars.Parse(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res, err := parser.Evaluate(d.vars)
+		res, err := pars.Evaluate(d.vars)
 		if err != nil {
 			t.Error(err)
 		}
@@ -193,7 +194,7 @@ func TestParenthesisIsCorrect(t *testing.T) {
 		{"(func2(func2(700,70,7), 222, -8)", false},
 	}
 	for i, d := range data {
-		if _, cor := expp.ParenthesisIsCorrect(d.s); cor != data[i].correct {
+		if _, cor := internal.ParenthesisIsCorrect(d.s); cor != data[i].correct {
 			t.Error("incorrect result for " + strconv.Itoa(i) + " case: '" + d.s +
 				"'. Need: " + strconv.FormatBool(data[i].correct) +
 				", but get: " + strconv.FormatBool(cor))

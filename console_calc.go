@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Overseven/go-math-expression-parser/expp"
+	expp "github.com/Overseven/go-math-expression-parser/parser"
 )
 
 // Foo - example of user-defined function
@@ -57,7 +57,7 @@ func main() {
 	}
 
 	// get list of the variables used in the expression
-	varsNeeded := expp.GetVarList(&exp)
+	varsNeeded := expp.GetVarList(exp)
 
 	// create [variable]value map to execute the expression
 	vars := make(map[string]float64)

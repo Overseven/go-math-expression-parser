@@ -1,23 +1,20 @@
-package expp
+package basic
 
 import (
 	"errors"
 	"fmt"
 	"math"
 	"strconv"
+
+	"github.com/overseven/go-math-expression-parser/funcs"
 )
-
-// FuncType - internal type of functions
-type FuncType func(args ...float64) (float64, error)
-
-const levelsOfPriorities = 3
 
 var (
 	// the array of operations sorted by operators
 	// operators[0] - highest operators (unary, functions)
 	// operators[1] - medium operators (*, /, %, ^)
 	// operators[2] - lowest operators (+, -)
-	defaultOperators = [levelsOfPriorities]map[string]FuncType{
+	DefaultOperators = [funcs.LevelsOfPriorities]map[string]funcs.FuncType{
 		{
 			"+":    UnarySum,
 			"-":    UnarySub,

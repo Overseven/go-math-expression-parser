@@ -1,15 +1,15 @@
-package tests
+package basic_test
 
 import (
 	"strconv"
 	"testing"
 
-	"github.com/overseven/go-math-expression-parser/expp"
+	dfuncs "github.com/overseven/go-math-expression-parser/funcs/basic"
 )
 
 func TestDefaultOperators(t *testing.T) {
 	// UnarySum
-	res, err := expp.UnarySum(5.4)
+	res, err := dfuncs.UnarySum(5.4)
 	if err != nil {
 		t.Error(err)
 	}
@@ -17,59 +17,59 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect UnarySum result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.UnarySum(5.4, 4.3)
+	res, err = dfuncs.UnarySum(5.4, 4.3)
 	if res != 0 || err == nil {
 		t.Error("incorrect UnarySum error handling")
 	}
 
-	res, err = expp.UnarySum()
+	res, err = dfuncs.UnarySum()
 	if res != 0 || err == nil {
 		t.Error("incorrect UnarySum error handling")
 	}
 
 	// UnarySub
-	res, err = expp.UnarySub(5.4)
+	res, err = dfuncs.UnarySub(5.4)
 	if err != nil {
 		t.Error(err)
 	}
 	if res != -5.4 {
 		t.Error("incorrect UnarySub result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
-	res, err = expp.UnarySub(5.4, 4.3)
+	res, err = dfuncs.UnarySub(5.4, 4.3)
 	if res != 0 || err == nil {
 		t.Error("incorrect UnarySub error handling")
 	}
 
-	res, err = expp.UnarySub()
+	res, err = dfuncs.UnarySub()
 	if res != 0 || err == nil {
 		t.Error("incorrect UnarySub error handling")
 	}
 
 	// Sqrt
-	res, err = expp.Sqrt(9.0)
+	res, err = dfuncs.Sqrt(9.0)
 	if err != nil {
 		t.Error(err)
 	}
 	if res != 3.0 {
 		t.Error("incorrect Sqrt result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
-	res, err = expp.Sqrt(5.4, 4.3)
+	res, err = dfuncs.Sqrt(5.4, 4.3)
 	if res != 0 || err == nil {
 		t.Error("incorrect Sqrt error handling")
 	}
 
-	res, err = expp.Sqrt()
+	res, err = dfuncs.Sqrt()
 	if res != 0 || err == nil {
 		t.Error("incorrect Sqrt error handling")
 	}
 
-	res, err = expp.Sqrt(-9)
+	res, err = dfuncs.Sqrt(-9)
 	if res != 0 || err == nil {
 		t.Error("incorrect Sqrt error handling")
 	}
 
 	// Abs
-	res, err = expp.Abs(-19.0)
+	res, err = dfuncs.Abs(-19.0)
 	if err != nil {
 		t.Error(err)
 	}
@@ -78,7 +78,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Abs result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Abs(19.0)
+	res, err = dfuncs.Abs(19.0)
 	if err != nil {
 		t.Error(err)
 	}
@@ -87,18 +87,18 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Abs result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Abs(5.4, 4.3)
+	res, err = dfuncs.Abs(5.4, 4.3)
 	if res != 0 || err == nil {
 		t.Error("incorrect Abs error handling")
 	}
 
-	res, err = expp.Abs()
+	res, err = dfuncs.Abs()
 	if res != 0 || err == nil {
 		t.Error("incorrect Abs error handling")
 	}
 
 	// Mult
-	res, err = expp.Mult(11.2, 3)
+	res, err = dfuncs.Mult(11.2, 3)
 	if err != nil {
 		t.Error(err)
 	}
@@ -107,7 +107,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Mult result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Mult(11.2, -3)
+	res, err = dfuncs.Mult(11.2, -3)
 	if err != nil {
 		t.Error(err)
 	}
@@ -116,23 +116,23 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Mult result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Mult()
+	res, err = dfuncs.Mult()
 	if res != 0 || err == nil {
 		t.Error("incorrect Mult error handling")
 	}
 
-	res, err = expp.Mult(1)
+	res, err = dfuncs.Mult(1)
 	if res != 0 || err == nil {
 		t.Error("incorrect Mult error handling")
 	}
 
-	res, err = expp.Mult(1, 2, 3)
+	res, err = dfuncs.Mult(1, 2, 3)
 	if res != 0 || err == nil {
 		t.Error("incorrect Mult error handling")
 	}
 
 	// Div
-	res, err = expp.Div(15.0, 2)
+	res, err = dfuncs.Div(15.0, 2)
 	if err != nil {
 		t.Error(err)
 	}
@@ -141,7 +141,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Div result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Div(-44, 11)
+	res, err = dfuncs.Div(-44, 11)
 	if err != nil {
 		t.Error(err)
 	}
@@ -150,23 +150,23 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Div result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Div()
+	res, err = dfuncs.Div()
 	if res != 0 || err == nil {
 		t.Error("incorrect Div error handling")
 	}
 
-	res, err = expp.Div(1)
+	res, err = dfuncs.Div(1)
 	if res != 0 || err == nil {
 		t.Error("incorrect Div error handling")
 	}
 
-	res, err = expp.Div(1, 2, 3)
+	res, err = dfuncs.Div(1, 2, 3)
 	if res != 0 || err == nil {
 		t.Error("incorrect Div error handling")
 	}
 
 	// Pow
-	res, err = expp.Pow(2, 5)
+	res, err = dfuncs.Pow(2, 5)
 	if err != nil {
 		t.Error(err)
 	}
@@ -175,7 +175,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Pow result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Pow(-3, 3)
+	res, err = dfuncs.Pow(-3, 3)
 	if err != nil {
 		t.Error(err)
 	}
@@ -184,23 +184,23 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Pow result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Pow()
+	res, err = dfuncs.Pow()
 	if res != 0 || err == nil {
 		t.Error("incorrect Pow error handling")
 	}
 
-	res, err = expp.Pow(1)
+	res, err = dfuncs.Pow(1)
 	if res != 0 || err == nil {
 		t.Error("incorrect Pow error handling")
 	}
 
-	res, err = expp.Pow(1, 2, 3)
+	res, err = dfuncs.Pow(1, 2, 3)
 	if res != 0 || err == nil {
 		t.Error("incorrect Pow error handling")
 	}
 
 	// DivReminder
-	res, err = expp.DivReminder(17, 5)
+	res, err = dfuncs.DivReminder(17, 5)
 	if err != nil {
 		t.Error(err)
 	}
@@ -209,7 +209,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect DivReminder result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.DivReminder(20, 0)
+	res, err = dfuncs.DivReminder(20, 0)
 	if err != nil {
 		t.Error(err)
 	}
@@ -218,23 +218,23 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect DivReminder error handling")
 	}
 
-	res, err = expp.DivReminder()
+	res, err = dfuncs.DivReminder()
 	if res != 0 || err == nil {
 		t.Error("incorrect DivReminder error handling")
 	}
 
-	res, err = expp.DivReminder(1)
+	res, err = dfuncs.DivReminder(1)
 	if res != 0 || err == nil {
 		t.Error("incorrect DivReminder error handling")
 	}
 
-	res, err = expp.DivReminder(1, 2, 3)
+	res, err = dfuncs.DivReminder(1, 2, 3)
 	if res != 0 || err == nil {
 		t.Error("incorrect DivReminder error handling")
 	}
 
 	// Sum
-	res, err = expp.Sum(15.0, 0.2)
+	res, err = dfuncs.Sum(15.0, 0.2)
 	if err != nil {
 		t.Error(err)
 	}
@@ -243,7 +243,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Sum result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Sum(-44, 11)
+	res, err = dfuncs.Sum(-44, 11)
 	if err != nil {
 		t.Error(err)
 	}
@@ -252,23 +252,23 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Sum result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Sum()
+	res, err = dfuncs.Sum()
 	if res != 0 || err == nil {
 		t.Error("incorrect Sum error handling")
 	}
 
-	res, err = expp.Sum(1)
+	res, err = dfuncs.Sum(1)
 	if res != 0 || err == nil {
 		t.Error("incorrect Sum error handling")
 	}
 
-	res, err = expp.Sum(1, 2, 3)
+	res, err = dfuncs.Sum(1, 2, 3)
 	if res != 0 || err == nil {
 		t.Error("incorrect Sum error handling")
 	}
 
 	// Sub
-	res, err = expp.Sub(15.0, 0.2)
+	res, err = dfuncs.Sub(15.0, 0.2)
 	if err != nil {
 		t.Error(err)
 	}
@@ -277,7 +277,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Sub result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Sub(-44, 11)
+	res, err = dfuncs.Sub(-44, 11)
 	if err != nil {
 		t.Error(err)
 	}
@@ -286,17 +286,17 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Sub result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
-	res, err = expp.Sub()
+	res, err = dfuncs.Sub()
 	if res != 0 || err == nil {
 		t.Error("incorrect Sub error handling")
 	}
 
-	res, err = expp.Sub(1)
+	res, err = dfuncs.Sub(1)
 	if res != 0 || err == nil {
 		t.Error("incorrect Sub error handling")
 	}
 
-	res, err = expp.Sub(1, 2, 3)
+	res, err = dfuncs.Sub(1, 2, 3)
 	if res != 0 || err == nil {
 		t.Error("incorrect Sub error handling")
 	}
