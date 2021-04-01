@@ -157,6 +157,11 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error("incorrect Div result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
+	_, err = dfuncs.Div(-44, 0)
+	if err == nil {
+		t.Error("incorrect Mult error handling")
+	}
+
 	res, err = dfuncs.Div()
 	if res != 0 || err == nil {
 		t.Error("incorrect Div error handling")
