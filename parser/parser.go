@@ -74,6 +74,7 @@ func (p *Parser) parseFunc(str []rune) (f interfaces.Function, isFunc bool, err 
 	if ind <= 0 {
 		return &userfunc.Func{}, false, nil
 	}
+	f = new(userfunc.Func)
 	f.SetOperation(string(str[:ind]))
 	if _, ok := p.Operators[0][f.GetOperation()]; !ok {
 		return &userfunc.Func{}, false, errors.New("function '" + f.GetOperation() + "' is not supported")
