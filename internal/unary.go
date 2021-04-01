@@ -18,7 +18,7 @@ func (u *Unary) GetVarList(vars map[string]interface{}) {
 
 // Evaluate - execute unary operator
 func (u *Unary) Evaluate(vars map[string]float64, p interfaces.ExpParser) (float64, error) {
-	right, err := u.Exp.Evaluate(vars, p)
+	val, err := u.Exp.Evaluate(vars, p)
 	if err != nil {
 		return 0.0, err
 	}
@@ -26,7 +26,7 @@ func (u *Unary) Evaluate(vars map[string]float64, p interfaces.ExpParser) (float
 	if !exist {
 		return 0.0, errors.New("not supported unary operation: '" + u.Op + "'")
 	}
-	result, err := p.GetFunctions()[indx][u.Op](right)
+	result, err := p.GetFunctions()[indx][u.Op](val)
 	return result, err
 }
 
