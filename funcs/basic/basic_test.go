@@ -1,11 +1,18 @@
 package basic_test
 
 import (
+	"math"
 	"strconv"
 	"testing"
 
 	dfuncs "github.com/overseven/go-math-expression-parser/funcs/basic"
 )
+
+const float64EqualityThreshold = 1e-9
+
+func almostEqual(a, b float64) bool {
+	return math.Abs(a-b) <= float64EqualityThreshold
+}
 
 func TestDefaultOperators(t *testing.T) {
 	// UnarySum
@@ -103,7 +110,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error(err)
 	}
 
-	if res != 33.6 {
+	if !almostEqual(res, 33.6) {
 		t.Error("incorrect Mult result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
@@ -112,7 +119,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error(err)
 	}
 
-	if res != -33.6 {
+	if !almostEqual(res, -33.60) {
 		t.Error("incorrect Mult result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
@@ -210,7 +217,7 @@ func TestDefaultOperators(t *testing.T) {
 	}
 
 	res, err = dfuncs.DivReminder(20, 0)
-	if err != nil {
+	if err == nil {
 		t.Error(err)
 	}
 
@@ -273,7 +280,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error(err)
 	}
 
-	if res != 15.2 {
+	if res != 14.8 {
 		t.Error("incorrect Sub result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
@@ -282,7 +289,7 @@ func TestDefaultOperators(t *testing.T) {
 		t.Error(err)
 	}
 
-	if res != -33.0 {
+	if res != -55.0 {
 		t.Error("incorrect Sub result: " + strconv.FormatFloat(res, 'e', 4, 64))
 	}
 
