@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	expp "github.com/Overseven/go-math-expression-parser/parser"
+	expp "github.com/overseven/go-math-expression-parser/parser"
 )
 
 // Foo - example of user-defined function
