@@ -1,4 +1,4 @@
-package parser_test
+package parser
 
 import (
 	"errors"
@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"testing"
 
-	expp "github.com/overseven/go-math-expression-parser/parser"
 )
 
 const float64EqualityThreshold = 1e-9
@@ -56,14 +55,14 @@ func TestGetVarList(t *testing.T) {
 		{"(доход-расход)*налог", []string{"доход", "расход", "налог"}},
 	}
 
-	parser := expp.NewParser()
+	parser := NewParser()
 
 	for _, d := range data {
 		exp, err := parser.Parse(d.input)
 		if err != nil {
 			t.Error(err)
 		}
-		res := expp.GetVarList(exp)
+		res := GetVarList(exp)
 		err = allElemsIsUnique(res)
 		if err != nil {
 			t.Error(err)
@@ -82,8 +81,8 @@ func TestNewParser(t *testing.T) {
 	func2 := func(args ...float64) (float64, error) {
 		return args[0] + 200, nil
 	}
-	parser1 := expp.NewParser()
-	parser2 := expp.NewParser()
+	parser1 := NewParser()
+	parser2 := NewParser()
 	parser1.AddFunction(func1, "f1")
 	parser1.AddFunction(func2, "f2")
 
@@ -130,7 +129,7 @@ func TestNewParser(t *testing.T) {
 }
 
 func TestNewParser2(t *testing.T) {
-	parser := expp.NewParser()
+	parser := NewParser()
 	type TestData struct {
 		input  string
 		output float64
@@ -170,7 +169,7 @@ func TestParse(t *testing.T) {
 		{"2*(2+2)", 8},
 		{"100+sqrt(3^2+(2*2+3))", 104},
 	}
-	parser := expp.NewParser()
+	parser := NewParser()
 	for _, d := range data {
 		_, err := parser.Parse(d.input)
 		if err != nil {
@@ -184,4 +183,53 @@ func TestParse(t *testing.T) {
 			t.Error("incorrect result, need: " + fmt.Sprintf("%f", d.output) + ", but get: " + fmt.Sprintf("%f", res))
 		}
 	}
+}
+
+func TestParserString(t *testing.T){
+	p := NewParser()
+	p.Parse("")
+	if p.String() != "0" {
+		t.Error("incorrect string conversion = " + p.String())
+	}
+	p.Parse("1 + a")
+	if p.String() != "( + 1 a )" {
+		t.Error("incorrect string conversion = " + p.String())
+	}
+	p.Parse("2^(sqrt(14+2))")
+	if p.String() != "( ^ 2 ( sqrt ( ( + 14 2 ) ) ) )" {
+		t.Error("incorrect string conversion = " + p.String())
+	}
+	p.Parse("abs(- 2)")
+	if p.String() != "( abs ( ( - 2 ) ) )" {
+		t.Error("incorrect string conversion = " + p.String())
+	}
+	p.Parse("- 4")
+	if p.String() != "( - 4 )" {
+		t.Error("incorrect string conversion = " + p.String())
+	}
+}
+
+func TestParse2(t *testing.T) {
+	p := NewParser()
+	exp, err := p.Parse("2 * (x+y")
+	if exp != nil || err == nil {
+		t.Error("incorrect error handling")
+	}
+	exp, err = p.Parse("Foo(x+y)")
+	if exp != nil || err == nil {
+		t.Error("incorrect error handling")
+	}
+}
+
+func TestParseStr(t *testing.T){
+	//p := Parser{}
+	//i, err := p.parseStr([]rune("asf"))
+	// TODO: finish
+}
+
+func TestParseFunc(t *testing.T){
+	//p := Parser{}
+	//_, isFunc, err := p.parseFunc([]rune("foo(a+b)"))
+	// TODO: finish
+
 }
