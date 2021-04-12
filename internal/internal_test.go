@@ -16,44 +16,6 @@ func fuzzyEqual(a, b float64) bool {
 	return math.Abs(a-b) <= float64EqualityThreshold
 }
 
-func TestUnaryOperatorExist(t *testing.T) {
-	parser := expp.NewParser()
-
-	ind, exist := internal.UnaryOperatorExist("~", parser)
-	if ind != -1 || exist {
-		t.Error("incorrect error handling")
-	}
-
-	ind, exist = internal.UnaryOperatorExist("-", parser)
-	if ind != 0 || !exist {
-		t.Error("incorrect result")
-	}
-
-	ind, exist = internal.UnaryOperatorExist("abs", parser)
-	if ind != 0 || !exist {
-		t.Error("incorrect result")
-	}
-}
-
-func TestBinaryOperatorExist(t *testing.T) {
-	parser := expp.NewParser()
-
-	ind, exist := internal.BinaryOperatorExist("~", parser)
-	if ind != -1 || exist {
-		t.Error("incorrect error handling")
-	}
-
-	ind, exist = internal.BinaryOperatorExist("^", parser)
-	if ind != 1 || !exist  {
-		t.Error("incorrect result")
-	}
-
-	ind, exist = internal.BinaryOperatorExist("-", parser)
-	if ind != 2 || !exist {
-		t.Error("incorrect result")
-	}
-}
-
 func TestEvalWithVars(t *testing.T) {
 	type TestVars map[string]float64
 	type TestData struct {
