@@ -142,3 +142,34 @@ func TestParenthesisIsCorrect(t *testing.T) {
 	}
 
 }
+
+func Foo1(args ...float64) (float64, error) {
+	return 0.1, nil
+}
+func TestUnaryOperatorExist(t *testing.T) {
+	p := expp.NewParser()
+	p.AddFunction(Foo1, "foo1")
+	_, exist := internal.UnaryOperatorExist("foo1", p)
+	if !exist {
+		t.Error("func not found")
+	}
+
+	_, exist = internal.UnaryOperatorExist("bar", p)
+	if exist {
+		t.Error("func false found")
+	}
+}
+
+func TestBinaryOperatorExist(t *testing.T) {
+	p := expp.NewParser()
+	p.AddFunction(Foo1, "foo1")
+	_, exist := internal.BinaryOperatorExist("^", p)
+	if !exist {
+		t.Error("operator not found")
+	}
+
+	_, exist = internal.BinaryOperatorExist("~", p)
+	if exist {
+		t.Error("operator false found")
+	}
+}

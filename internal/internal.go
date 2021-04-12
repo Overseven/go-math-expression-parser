@@ -12,14 +12,14 @@ func PrepareString(str string) string {
 	return str
 }
 
-func unaryOperatorExist(op string, p interfaces.ExpParser) (index int, exist bool) {
+func UnaryOperatorExist(op string, p interfaces.ExpParser) (index int, exist bool) {
 	if _, ok := p.GetFunctions()[0][op]; ok {
 		return 0, true
 	}
 	return -1, false
 }
 
-func binaryOperatorExist(op string, p interfaces.ExpParser) (index int, exist bool) {
+func BinaryOperatorExist(op string, p interfaces.ExpParser) (index int, exist bool) {
 	for i := 1; i <= 2; i++ {
 		if _, ok := p.GetFunctions()[i][op]; ok {
 			return i, true
