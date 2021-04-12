@@ -15,32 +15,42 @@ const float64EqualityThreshold = 1e-9
 func fuzzyEqual(a, b float64) bool {
 	return math.Abs(a-b) <= float64EqualityThreshold
 }
-func TestBase(t *testing.T) {
-	type TestData struct {
-		input  string
-		output float64
+
+func TestUnaryOperatorExist(t *testing.T) {
+	parser := expp.NewParser()
+
+	ind, exist := internal.UnaryOperatorExist("~", parser)
+	if ind != -1 || exist {
+		t.Error("incorrect error handling")
 	}
 
-	data := []TestData{
-		{"", 0.0},
-		{"10+50+5", 65},
-		{"2*2+2", 6},
-		{"2*(2+2)", 8},
-		{"100+sqrt(3^2+(2*2+3))", 104},
+	ind, exist = internal.UnaryOperatorExist("-", parser)
+	if ind != 0 || !exist {
+		t.Error("incorrect result")
 	}
+
+	ind, exist = internal.UnaryOperatorExist("abs", parser)
+	if ind != 0 || !exist {
+		t.Error("incorrect result")
+	}
+}
+
+func TestBinaryOperatorExist(t *testing.T) {
 	parser := expp.NewParser()
-	for _, d := range data {
-		_, err := parser.Parse(d.input)
-		if err != nil {
-			t.Error(err)
-		}
-		res, err := parser.Evaluate(map[string]float64{})
-		if err != nil {
-			t.Error(err)
-		}
-		if !fuzzyEqual(res, d.output) {
-			t.Error("incorrect result, need: " + fmt.Sprintf("%f", d.output) + ", but get: " + fmt.Sprintf("%f", res))
-		}
+
+	ind, exist := internal.BinaryOperatorExist("~", parser)
+	if ind != -1 || exist {
+		t.Error("incorrect error handling")
+	}
+
+	ind, exist = internal.BinaryOperatorExist("^", parser)
+	if ind != 1 || !exist  {
+		t.Error("incorrect result")
+	}
+
+	ind, exist = internal.BinaryOperatorExist("-", parser)
+	if ind != 2 || !exist {
+		t.Error("incorrect result")
 	}
 }
 
@@ -60,46 +70,6 @@ func TestEvalWithVars(t *testing.T) {
 	}
 
 	pars := expp.NewParser()
-
-	for _, d := range data {
-		_, err := pars.Parse(d.input)
-		if err != nil {
-			t.Error(err)
-		}
-		res, err := pars.Evaluate(d.vars)
-		if err != nil {
-			t.Error(err)
-		}
-		if !fuzzyEqual(res, d.output) {
-			t.Error("incorrect result, need: " + fmt.Sprintf("%f", d.output) + ", but get: " + fmt.Sprintf("%f", res))
-		}
-	}
-}
-
-func TestUserFunction(t *testing.T) {
-	func1 := func(args ...float64) (float64, error) {
-		return args[0]*args[1] - args[2], nil
-	}
-	func2 := func(args ...float64) (float64, error) {
-		return args[0] + args[1] + args[2], nil
-	}
-	pars := expp.NewParser()
-	pars.AddFunction(func1, "func1")
-	pars.AddFunction(func2, "func2")
-
-	type TestVars map[string]float64
-	type TestData struct {
-		input  string
-		vars   TestVars
-		output float64
-	}
-
-	data := []TestData{
-		{"func1(2, 3, 1)", TestVars{}, 5.0},
-		{"func1(2^x, y, (x+y))", TestVars{"x": 3, "y": 5.1}, 32.7},
-		{"func2(600, 60, 6)", TestVars{}, 666},
-		{"func2(func2(700,70,7), 222, -8)", TestVars{}, 991},
-	}
 
 	for _, d := range data {
 		_, err := pars.Parse(d.input)
